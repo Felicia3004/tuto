@@ -19,7 +19,7 @@
             margin: 0;
         }
         </style>
-        <title></title>
+        <title>Lieux de culture à Rennes Métropole</title>
     </head>
     <body>
         <div id="map">
@@ -41,6 +41,17 @@
         var highlightLayer;
         function highlightFeature(e) {
             highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#00d5ff',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#00d5ff',
+                fillOpacity: 1
+              });
+            }
             highlightLayer.openPopup();
         }
         var map = L.map('map', {
@@ -94,6 +105,9 @@
         function pop_communes_RM_1(feature, layer) {
             layer.on({
                 mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
                     if (typeof layer.closePopup == 'function') {
                         layer.closePopup();
                     } else {
@@ -151,7 +165,7 @@
                 weight: 2.0, 
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(167,167,167,0.0)',
+                fillColor: 'rgba(255,255,255,0.00784313725490196)',
                 interactive: false,
             }
         }
@@ -172,6 +186,9 @@
         function pop_lieuculture_2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
                     if (typeof layer.closePopup == 'function') {
                         layer.closePopup();
                     } else {
@@ -245,6 +262,16 @@
 
         bounds_group.addLayer(layer_lieuculture_2);
         cluster_lieuculture_2.addTo(map);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Lieux de culture à Rennes Métropole</h2>';
+            };
+            title.addTo(map);
         var baseMaps = {};
         L.control.layers(baseMaps,{'<img src="legend/lieuculture_2.png" /> lieuculture': cluster_lieuculture_2,'<img src="legend/communes_RM_1.png" /> communes_RM': layer_communes_RM_1,"Positron [no labels]": layer_Positronnolabels_0,}).addTo(map);
         setBounds();
